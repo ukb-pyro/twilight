@@ -3,344 +3,184 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prankish Transvaluation Pentad — Absurdity · Ontology · Epistemology · Agency · Orwellian Frailty</title>
-  <meta name="description" content="A copy‑paste single‑file HTML that visualizes a Nietzsche‑tinged pentad: Absurdity → Ontology → Epistemology → Agency → Orwellian Frailty. Static–dynamic, no libraries." />
+  <title>Pentad × Pentagon — minimal, staged</title>
   <style>
     :root{
-      --bg:#0b0d0f; --panel:#0f1216; --text:#e7efe9; --muted:#9fb0a6; --edge:#1f2326;
-      --accent:#8ee8ff; --ring:#192026; --glow:rgba(142,232,255,.18);
-      --p1:#ffd166; /* Absurdity */
-      --p2:#06d6a0; /* Ontology  */
-      --p3:#7bd3ea; /* Epistemology */
-      --p4:#ef476f; /* Agency */
-      --p5:#a78bfa; /* Orwellian Frailty */
+      --bg:#0b0d0f; --ink:#e7efe9; --muted:#9fb0a6; --edge:#1c2126; --hl:#8ee8ff;
+      --a:#ffd166; --b:#06d6a0; --c:#7bd3ea; --d:#ef476f; --e:#a78bfa;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; background: radial-gradient(1200px 800px at 70% 20%, #0d1217 0%, var(--bg) 55%) fixed,
-               repeating-conic-gradient(from 0deg, #0d1115 0% 2%, #0b0d0f 2% 4%) fixed;
-      color:var(--text); font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    }
+    body{margin:0; background:var(--bg); color:var(--ink); font:15px/1.6 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial}
     .wrap{min-height:100%; display:grid; grid-template-rows:auto 1fr auto}
-    header{
-      padding:18px 16px 8px; border-bottom:1px solid var(--edge);
-      background: linear-gradient(to bottom, rgba(255,255,255,0.02), rgba(0,0,0,0));
-    }
-    h1{
-      margin:0; font-size: clamp(18px, 2vw + 10px, 28px); letter-spacing:.4px; font-weight:700;
-      display:flex; gap:.6ch; align-items:baseline; flex-wrap:wrap
-    }
-    h1 .dot{opacity:.7}
-    .motto{color:var(--muted); margin-top:6px; font-size:13px}
-    .motto em{opacity:.9}
+    header,footer{padding:14px 16px; border-bottom:1px solid var(--edge)}
+    footer{border-top:1px solid var(--edge); border-bottom:none; color:var(--muted); font-size:12px}
+    h1{margin:2px 0 4px; font-size:18px; letter-spacing:.2px}
+    .sub{color:var(--muted); font-size:12px}
 
-    .stage{
-      position:relative; display:grid; place-items:center; padding:20px; overflow:hidden;
-    }
-    .canvas{
-      width:min(120vmin, 1200px); aspect-ratio:1/1; position:relative; border-radius:28px;
-      border:1px solid var(--edge); background:
-        radial-gradient(60% 60% at 50% 50%, rgba(142,232,255,.05), transparent 70%),
-        linear-gradient(to bottom right, rgba(255,255,255,.04), rgba(0,0,0,.08));
-      box-shadow: 0 20px 60px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.02);
-      isolation:isolate;
-    }
+    .board{display:grid; grid-template-columns:1fr 360px; gap:18px; padding:16px; align-items:center}
+    @media (max-width:860px){ .board{grid-template-columns:1fr} }
 
-    /* Controls */
-    .controls{
-      position:absolute; inset:auto 14px 14px auto; display:flex; gap:8px; z-index:30;
-      background:rgba(15,18,22,.6); border:1px solid var(--edge); border-radius:14px; padding:6px;
-      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    }
-    .btn{
-      appearance:none; border:1px solid var(--edge); background:linear-gradient(#131820, #0e1115);
-      color:var(--text); padding:8px 10px; border-radius:10px; cursor:pointer; font-weight:600; font-size:13px;
-      box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 6px 16px rgba(0,0,0,.25);
-    }
-    .btn:hover{filter:brightness(1.08)}
-    .btn:active{transform:translateY(1px)}
+    /* Pentagon */
+    .stage{display:grid; place-items:center; border:1px solid var(--edge); border-radius:16px; padding:10px; background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0))}
+    svg{width:min(86vmin,720px); height:auto; display:block}
+    .poly{fill:none; stroke:#39424c; stroke-width:1}
+    .node{cursor:pointer; transition:transform .12s ease}
+    .node:focus{outline:none}
+    .node:hover{transform:scale(1.05)}
+    .dot{r:8; stroke:rgba(255,255,255,.25); stroke-width:1}
+    .lab{font-size:12px; fill:var(--muted); letter-spacing:.06em}
 
-    /* Spiral */
-    .spiral{
-      position:absolute; inset:0; transform:translateZ(0);
-      animation: spin 160s linear infinite;
-      transform-origin:50% 50%;
-    }
-    .paused{ animation-play-state: paused; }
-    @keyframes spin{ to { transform: rotate(360deg) } }
+    /* Active state */
+    [data-active="0"] .n0 .dot{fill:var(--a)}
+    [data-active="1"] .n1 .dot{fill:var(--b)}
+    [data-active="2"] .n2 .dot{fill:var(--c)}
+    [data-active="3"] .n3 .dot{fill:var(--d)}
+    [data-active="4"] .n4 .dot{fill:var(--e)}
 
-    .node{
-      position:absolute; left:50%; top:50%; transform-style:preserve-3d;
-      width: clamp(200px, 26vmin, 320px); max-width: 38ch;
-      translate:-50% -50%;
-    }
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.1));
-      border:1px solid var(--edge); border-radius:20px; padding:14px 14px 12px;
-      box-shadow: 0 18px 40px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03);
-      position:relative; overflow:hidden;
-    }
-    .card::before{
-      content:""; position:absolute; inset:-2px; border-radius:inherit; pointer-events:none;
-      background: radial-gradient(50% 50% at 50% 50%, var(--glow), transparent 70%);
-      opacity:.0; transition:opacity .25s ease;
-    }
-    .card:hover::before{opacity:.6}
+    [data-active] .node .ring{opacity:0}
+    [data-active="0"] .n0 .ring,
+    [data-active="1"] .n1 .ring,
+    [data-active="2"] .n2 .ring,
+    [data-active="3"] .n3 .ring,
+    [data-active="4"] .n4 .ring{opacity:.55}
 
-    .label{display:flex; align-items:center; gap:.6ch; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.16em}
-    .swatch{width:9px; height:9px; border-radius:50%; box-shadow:0 0 0 3px rgba(255,255,255,.06) inset}
-    .title{font-weight:800; font-size: clamp(18px, 1.2vw + 12px, 22px); margin:6px 0 6px}
-    .body{font-size:14px; color:#d5e3db}
+    .ring{fill:none; stroke:var(--hl); stroke-width:2; opacity:0; transition:opacity .2s ease}
 
-    .actions{display:flex; gap:8px; margin-top:10px}
-    .tune, .expand{
-      border:1px solid var(--edge); border-radius:10px; padding:6px 8px; font-size:12px; font-weight:700; cursor:pointer;
-      background:linear-gradient(#131820, #0e1115); color:var(--text)
-    }
-
-    /* Ripple on hammer tap */
-    .ripple {
-      position:absolute; inset:-2px; border-radius:inherit; pointer-events:none; overflow:hidden;
-    }
-    .ripple::after{
-      content:""; position:absolute; left:50%; top:50%; width:8px; height:8px; border-radius:50%;
-      background: radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,.0) 60%);
-      translate:-50% -50%; opacity:0; scale:1; filter: blur(1px);
-    }
-    .card.ping .ripple::after{ animation: ping 700ms ease-out }
-    @keyframes ping{ 0%{opacity:.9; scale:.2} 100%{opacity:0; scale:30} }
-
-    /* Position nodes along an approximate golden spiral */
-    .node:nth-child(1){ --r: 10vmin; --a:   10deg;  --c: var(--p1); }
-    .node:nth-child(2){ --r: 22vmin; --a:   88deg;  --c: var(--p2); }
-    .node:nth-child(3){ --r: 35vmin; --a:  166deg;  --c: var(--p3); }
-    .node:nth-child(4){ --r: 50vmin; --a:  244deg;  --c: var(--p4); }
-    .node:nth-child(5){ --r: 66vmin; --a:  322deg;  --c: var(--p5); }
-    .node{ transform: translate(-50%, -50%) rotate(var(--a)) translateX(var(--r)) rotate(calc(-1 * var(--a))) }
-    .node .swatch{ background: var(--c) }
-
-    /* Stacked mode */
-    .stacked .spiral{ animation:none; }
-    .stacked .node{ position:relative; left:auto; top:auto; translate:0 0; transform:none; width: min(820px, 100%); margin:0 auto 14px }
-
-    footer{border-top:1px solid var(--edge); padding:10px 14px; color:var(--muted); font-size:12px}
-    code.k{color:#d9e0ff}
-
-    /* Small screens */
-    @media (max-width:640px){
-      .canvas{width:min(98vmin, 760px)}
-      .controls{inset:auto 10px 10px auto}
-    }
+    /* Panel */
+    .panel{border:1px solid var(--edge); border-radius:16px; padding:14px; background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.08))}
+    .kicker{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.14em}
+    .title{font-weight:800; font-size:20px; margin:4px 0}
+    .body{color:#d7e4dc; font-size:14px}
+    .line{height:1px; margin:10px 0; background:linear-gradient(90deg, transparent, #334, transparent)}
+    .micro{font-size:12px; color:var(--muted)}
+    .hint{margin-top:8px; font-size:12px; color:var(--muted)}
+    code{background:#101419; padding:2px 4px; border-radius:5px; border:1px solid var(--edge); color:#d9e0ff}
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="wrap" id="app" data-active="0">
     <header>
-      <h1>
-        Prankish Transvaluation Pentad
-        <span class="dot">—</span>
-        <span>Absurdity</span><span class="dot">·</span><span>Ontology</span><span class="dot">·</span><span>Epistemology</span><span class="dot">·</span><span>Agency</span><span class="dot">·</span><span>Orwellian Frailty</span>
-      </h1>
-      <div class="motto"><em>increscunt animi, virescit volnere virtus</em> — spirits grow, courage gains from the wound.</div>
+      <h1>Pentad × Pentagon — minimal, staged</h1>
+      <div class="sub">Absurdity · Ontology · Epistemology · Agency · Orwellian Frailty</div>
     </header>
 
-    <main class="stage">
-      <section class="canvas" id="canvas" aria-label="Pentad spiral canvas">
-        <div class="controls" role="group" aria-label="Display controls">
-          <button class="btn" id="toggleSpin" aria-pressed="false" title="Pause/Play spiral">⏯️ Spin</button>
-          <button class="btn" id="toggleLayout" aria-pressed="false" title="Toggle stacked layout">↕️ Stack</button>
-          <button class="btn" id="pingAll" title="Cross‑examine all with the hammer">🔨 Hammer Test</button>
-        </div>
+    <main class="board">
+      <section class="stage" aria-label="Minimal Pentagon">
+        <!-- Simple, readable SVG pentagon with five tappable nodes -->
+        <svg viewBox="-60 -60 120 120" role="img" aria-labelledby="ttl desc">
+          <title id="ttl">Pentagon of the Pentad</title>
+          <desc id="desc">Five points: Absurdity, Ontology, Epistemology, Agency, Orwellian Frailty. Click a point to stage its content.</desc>
+          <!-- pentagon polygon (for reference grid) -->
+          <polygon class="poly" points="0,-50 47,-15 29,40 -29,40 -47,-15" />
 
-        <div class="spiral" id="spiral">
-          <!-- 1. Absurdity -->
-          <article class="node" data-tone="392" data-name="Absurdity">
-            <div class="card">
-              <div class="ripple"></div>
-              <div class="label"><span class="swatch" aria-hidden="true"></span> 1 · Prankish Surplus Power</div>
-              <div class="title">Absurdity</div>
-              <div class="body">
-                Mischief as method: exuberant spirits that refuse to be crushed by solemnity.
-                Strategic play that vents pressure and opens creative moves.
-              </div>
-              <div class="actions">
-                <button class="tune" aria-label="Tap Absurdity with hammer">🔨 Tap</button>
-                <button class="expand" aria-expanded="false">Read more</button>
-              </div>
-            </div>
-          </article>
-
-          <!-- 2. Ontology -->
-          <article class="node" data-tone="440" data-name="Ontology">
-            <div class="card">
-              <div class="ripple"></div>
-              <div class="label"><span class="swatch" aria-hidden="true"></span> 2 · What Is</div>
-              <div class="title">Ontology</div>
-              <div class="body">
-                Define your being space: entities, relations, constraints.
-                For a digital twin, this is the model of reality you dare to assert.
-              </div>
-              <div class="actions">
-                <button class="tune" aria-label="Tap Ontology with hammer">🔨 Tap</button>
-                <button class="expand" aria-expanded="false">Read more</button>
-              </div>
-            </div>
-          </article>
-
-          <!-- 3. Epistemology -->
-          <article class="node" data-tone="523" data-name="Epistemology">
-            <div class="card">
-              <div class="ripple"></div>
-              <div class="label"><span class="swatch" aria-hidden="true"></span> 3 · How We Know</div>
-              <div class="title">Epistemology</div>
-              <div class="body">
-                Instruments, uncertainty, falsifiability: your measurement layer.
-                Train the “evil ear” to hear hollow notes in data and inference.
-              </div>
-              <div class="actions">
-                <button class="tune" aria-label="Tap Epistemology with hammer">🔨 Tap</button>
-                <button class="expand" aria-expanded="false">Read more</button>
-              </div>
-            </div>
-          </article>
-
-          <!-- 4. Agency -->
-          <article class="node" data-tone="659" data-name="Agency">
-            <div class="card">
-              <div class="ripple"></div>
-              <div class="label"><span class="swatch" aria-hidden="true"></span> 4 · What Acts</div>
-              <div class="title">Agency</div>
-              <div class="body">
-                Decision‑makers (human, synthetic, hybrid) updating beliefs and changing states.
-                Recuperative power grows in challenge—war as stress test.
-              </div>
-              <div class="actions">
-                <button class="tune" aria-label="Tap Agency with hammer">🔨 Tap</button>
-                <button class="expand" aria-expanded="false">Read more</button>
-              </div>
-            </div>
-          </article>
-
-          <!-- 5. Orwellian Frailty -->
-          <article class="node" data-tone="262" data-name="Orwellian Frailty">
-            <div class="card">
-              <div class="ripple"></div>
-              <div class="label"><span class="swatch" aria-hidden="true"></span> 5 · Decay of the Blossoming</div>
-              <div class="title">Orwellian Frailty</div>
-              <div class="body">
-                Entropy and ossification: when vibrant forms harden into dogma.
-                Subversive humor to puncture idols and keep power honest.
-              </div>
-              <div class="actions">
-                <button class="tune" aria-label="Tap Orwellian Frailty with hammer">🔨 Tap</button>
-                <button class="expand" aria-expanded="false">Read more</button>
-              </div>
-            </div>
-          </article>
-        </div>
+          <!-- nodes: order clockwise from top -->
+          <g tabindex="0" class="node n0" data-i="0" transform="translate(0,-50)">
+            <circle class="ring" r="12" />
+            <circle class="dot" />
+            <text class="lab" y="-14" text-anchor="middle">Absurdity</text>
+          </g>
+          <g tabindex="0" class="node n1" data-i="1" transform="translate(47,-15)">
+            <circle class="ring" r="12" />
+            <circle class="dot" />
+            <text class="lab" x="14" y="4">Ontology</text>
+          </g>
+          <g tabindex="0" class="node n2" data-i="2" transform="translate(29,40)">
+            <circle class="ring" r="12" />
+            <circle class="dot" />
+            <text class="lab" x="10" y="14">Epistemology</text>
+          </g>
+          <g tabindex="0" class="node n3" data-i="3" transform="translate(-29,40)">
+            <circle class="ring" r="12" />
+            <circle class="dot" />
+            <text class="lab" x="-10" y="14" text-anchor="end">Agency</text>
+          </g>
+          <g tabindex="0" class="node n4" data-i="4" transform="translate(-47,-15)">
+            <circle class="ring" r="12" />
+            <circle class="dot" />
+            <text class="lab" x="-14" y="4" text-anchor="end">Orwellian Frailty</text>
+          </g>
+        </svg>
       </section>
+
+      <aside class="panel" aria-live="polite" aria-atomic="true">
+        <div class="kicker" id="kicker">1 · Prankish Surplus Power</div>
+        <div class="title" id="title">Absurdity</div>
+        <div class="body" id="body">Mischief as method: exuberant spirits that refuse solemn crush. Play vents pressure and opens creative moves.</div>
+        <div class="line"></div>
+        <div class="micro" id="micro">“increscunt animi, virescit volnere virtus” — spirits grow; courage gains from the wound.</div>
+        <div class="hint">Click/Tab + Enter a point on the pentagon. Use <code>←/→</code> to cycle.</div>
+      </aside>
     </main>
 
     <footer>
-      <div>Tip: <code class="k">Spin</code> pauses/plays the spiral, <code class="k">Stack</code> switches to a linear reading mode, and <code class="k">Hammer Test</code> pings all five at once (with a little tuning‑fork ripple).</div>
+      Built deliberately plain: no frameworks, one file. Edit the copy right in the HTML.
     </footer>
   </div>
 
   <script>
-    // Controls
-    const canvas = document.getElementById('canvas');
-    const spiral = document.getElementById('spiral');
-    const toggleSpin = document.getElementById('toggleSpin');
-    const toggleLayout = document.getElementById('toggleLayout');
-    const pingAll = document.getElementById('pingAll');
+    const app = document.getElementById('app');
+    const nodes = Array.from(document.querySelectorAll('.node'));
+    const kicker = document.getElementById('kicker');
+    const title = document.getElementById('title');
+    const body = document.getElementById('body');
+    const micro = document.getElementById('micro');
 
-    toggleSpin.addEventListener('click', () => {
-      const paused = spiral.classList.toggle('paused');
-      toggleSpin.setAttribute('aria-pressed', String(paused));
-    });
-    toggleLayout.addEventListener('click', () => {
-      const stacked = canvas.classList.toggle('stacked');
-      toggleLayout.setAttribute('aria-pressed', String(stacked));
-    });
+    const DATA = [
+      {
+        kicker: '1 · Prankish Surplus Power',
+        title: 'Absurdity',
+        body: 'Mischief as method: exuberant spirits that refuse solemn crush. Play vents pressure and opens creative moves.',
+        micro: 'Ray of sunshine to shake off crushing earnestness; cross‑examining idols permitted.'
+      },
+      {
+        kicker: '2 · What Is',
+        title: 'Ontology',
+        body: 'Define the being‑space: entities, relations, constraints. In a digital twin, this is the asserted model of reality.',
+        micro: 'Hammer‑test your categories; every ontology is a wager.'
+      },
+      {
+        kicker: '3 · How We Know',
+        title: 'Epistemology',
+        body: 'Instrumentation + uncertainty. Treat signals as provisional; reward what survives refutation and predicts.',
+        micro: 'Train the evil ear for hollow notes in data and inference.'
+      },
+      {
+        kicker: '4 · What Acts',
+        title: 'Agency',
+        body: 'Decision‑makers (human/synthetic) update beliefs and change states. Stress refines capability—until it breaks.',
+        micro: 'War as stress test; recuperative power grows around the wound.'
+      },
+      {
+        kicker: '5 · Decay of the Blossoming',
+        title: 'Orwellian Frailty',
+        body: 'Entropy and ossification: when vitality hardens to dogma and surveillance. Use prankish critique to ventilate power.',
+        micro: 'Idols get hollow; humor makes the tuning‑fork ring.'
+      }
+    ];
 
-    // WebAudio: minimal tuning‑fork ping per node
-    let audioCtx = null;
-    function ensureAudio(){ if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } }
-
-    function ping(el, freq=440){
-      ensureAudio();
-      try{
-        const now = audioCtx.currentTime;
-        const o = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        o.type = 'sine';
-        o.frequency.setValueAtTime(freq, now);
-        g.gain.setValueAtTime(0.0001, now);
-        g.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
-        g.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
-        o.connect(g).connect(audioCtx.destination);
-        o.start(now);
-        o.stop(now + 0.38);
-      }catch(e){ /* fail silently if blocked */ }
-      // visual ripple
-      const card = el.querySelector('.card');
-      card.classList.remove('ping');
-      void card.offsetWidth; // reflow to restart animation
-      card.classList.add('ping');
-      setTimeout(()=>card.classList.remove('ping'), 720);
+    function stage(i){
+      const n = DATA[i];
+      app.setAttribute('data-active', String(i));
+      kicker.textContent = n.kicker;
+      title.textContent = n.title;
+      body.textContent = n.body;
+      micro.textContent = n.micro;
     }
 
-    // Bind Tap + Expand
-    document.querySelectorAll('.node').forEach(node => {
-      const btn = node.querySelector('.tune');
-      const exp = node.querySelector('.expand');
-      btn.addEventListener('click', () => {
-        const f = Number(node.getAttribute('data-tone')) || 440;
-        ping(node, f);
-      });
-      exp.addEventListener('click', () => {
-        const body = node.querySelector('.body');
-        const isOpen = exp.getAttribute('aria-expanded') === 'true';
-        exp.setAttribute('aria-expanded', String(!isOpen));
-        if(!isOpen){
-          // append a slightly longer explanation once
-          if(!body.dataset.extended){
-            const more = document.createElement('div');
-            more.style.marginTop = '8px';
-            more.style.opacity = '.92';
-            more.innerHTML = {
-              'Absurdity': `Cheerfulness as surplus power: a playful refusal that breaks spellbound solemnity and unlocks moves that earnestness would never allow.`,
-              'Ontology': `Hammer‑test your categories. Name what counts as real in your system and accept the responsibility: every ontology is a wager.`,
-              'Epistemology': `Measure, doubt, update. Treat every signal as provisional; reward methods that predict and survive refutation.`,
-              'Agency': `Policies that act on beliefs. Calibrate exploration vs. exploitation; stress refines capability (up to the point of breakage).`,
-              'Orwellian Frailty': `Surveillance, dogma, language‑games: the drift from vitality to control. Use prankish critique to ventilate stale power.`
-            }[node.getAttribute('data-name')] || '';
-            body.after(more); body.dataset.extended = '1';
-          }
-        } else {
-          // collapse by removing the extension
-          const ext = body.nextElementSibling;
-          if(ext) ext.remove();
-          delete body.dataset.extended;
-        }
-      });
+    nodes.forEach(g=>{
+      g.addEventListener('click', ()=> stage(Number(g.dataset.i)));
+      g.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); stage(Number(g.dataset.i)); } });
     });
 
-    // Hammer Test: ping all with a quick arpeggio
-    pingAll.addEventListener('click', () => {
-      const nodes = Array.from(document.querySelectorAll('.node'));
-      nodes.forEach((n, i) => setTimeout(()=>{
-        const f = Number(n.getAttribute('data-tone')) || 440;
-        ping(n, f);
-      }, i*120));
-    });
-
-    // Accessibility: keyboard quick‑keys
+    // Arrow‑key cycling
     window.addEventListener('keydown', (e)=>{
-      if(e.key.toLowerCase()==='s') toggleSpin.click();
-      if(e.key.toLowerCase()==='l') toggleLayout.click();
-      if(e.key.toLowerCase()==='h') pingAll.click();
+      if(e.key==='ArrowRight' || e.key==='ArrowLeft'){
+        const cur = Number(app.getAttribute('data-active')) || 0;
+        const dir = e.key==='ArrowRight' ? 1 : -1;
+        const nxt = (cur + dir + DATA.length) % DATA.length;
+        stage(nxt);
+      }
     });
   </script>
 </body>
